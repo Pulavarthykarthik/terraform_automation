@@ -15,7 +15,7 @@ resource "random_string" "random" {
 }
 
 resource "azurerm_storage_account" "example" {
-  name                     = "${lower(var.base_name)}${random_string.random.result}${var.environment}"
+  name                     = "${lower(var.base_name)}${var.environment}"
   resource_group_name      = var.resource_group_name
   location                 = var.location
   account_tier             = "Standard"

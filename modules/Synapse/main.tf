@@ -14,7 +14,7 @@ resource "azurerm_storage_data_lake_gen2_filesystem" "example" {
 }
 
 resource "azurerm_synapse_workspace" "example" {
-  name                                 = "demo-synapse"
+  name                                 = "demo-synapse-daa"
   resource_group_name                  = var.resource_group_name
   location                             = var.location
   storage_data_lake_gen2_filesystem_id = azurerm_storage_data_lake_gen2_filesystem.example.id
