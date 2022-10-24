@@ -1,0 +1,180 @@
+trigger: none
+pr: none
+pool:
+  vmImage: windows-latest
+resources:
+  repositories:
+    - repository: modules
+      type: git
+      name: Azure-Data-Enterprise-Platform/DEP-Terraform-iac-modules
+variables:
+  - group: daa-terraform
+
+
+stages:
+  - stage: terraform_validate
+    displayName: Prepare Terraform and Validate Code
+    jobs:
+      - job: terraform_validate_develop
+        continueOnError: false
+        steps:
+          - task: TerraformInstaller@0
+            displayName: Terraform Install
+            inputs:
+              terraformVersion: 'latest'
+          - task: InstallSSHKey@0
+            displayName: 'Install SSH Key'
+            inputs:
+              knownHostsEntry: '$(remote_host)'
+              sshPublicKey: '$(ssh_public_key)'
+              sshPassphrase: '$(ssh_passphrase)'
+              sshKeySecureFile: id_rsa
+
+          - task: TerraformTaskV3@3
+            displayName: Terraform init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
+              commandOptions: '-var-file="dev.auto.tfvars"'
+              backendServiceArm: 'dep-service-connection' #check service connection
+              backendAzureRmResourceGroupName: 'dem-admin-bi-rg' # changed
+              backendAzureRmStorageAccountName: 'demtstatesa' # changed
+              backendAzureRmContainerName: 'dem-terraform-container'
+              backendAzureRmKey: 'terraform.tfstate'
+ 
+          - task: TerraformTaskV3@3
+            displayName: Terraform Validate
+            inputs:
+              provider: 'azurerm'
+              command: 'validate'
+  - stage: terraform_plan
+    dependsOn:
+    - terraform_validate
+    condition: succeeded('terraform_validate')
+    jobs:
+      - job: terraform_plan_develop
+        steps: 
+        - checkout: self
+        - task: TerraformInstaller@0
+          displayName: Terraform install
+          inputs:
+            terraformVersion: 'latest'
+        - task: InstallSSHKey@0
+          displayName: 'Install SSH Key'
+          inputs:
+            knownHostsEntry: '$(remote_host)'
+            sshPublicKey: '$(ssh_public_key)'
+            sshPassphrase: '$(ssh_passphrase)'
+            sshKeySecureFile: id_rsa
+        #new things added for azure keyvault
+        - task: AzureKeyVault@1
+          inputs:
+            ConnectedServiceName: 'dep-service-connection'
+            keyVaultName: 'kskey-demo'
+            secretsFilter: '*'
+            runAsPreJob: false
+        - task: TerraformTaskV3@3
+          displayName: Terraform init
+          inputs:
+            provider: 'azurerm'
+            command: 'init'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
+            commandOptions: '-var-file="dev.auto.tfvars"' #changed dev file name
+            backendServiceArm: 'dep-service-connection' #change service connection name
+            backendAzureRmResourceGroupName: 'dem-admin-bi-rg' # changed
+            backendAzureRmStorageAccountName: 'demtstatesa' # changed
+            backendAzureRmContainerName: 'dem-terraform-container'
+            backendAzureRmKey: 'terraform.tfstate'
+             
+
+        - task: TerraformTaskV3@3
+          displayName: Terraform Plan
+          inputs:
+            provider: 'azurerm'
+            command: 'plan'
+            workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
+            commandOptions: '-var-file="dev.auto.tfvars"' # change
+            environmentServiceNameAzureRM: 'dep-service-connection' # change
+  - stage: terraform_apply
+    dependsOn:
+    - terraform_plan
+    condition: succeeded('terraform_plan')
+    jobs:
+      - job: terraform_apply_develop
+        steps:
+          - checkout: self
+          - task: TerraformInstaller@0
+            displayName: Terraform install
+            inputs:
+              terraformVersion: 'latest'
+          - task: InstallSSHKey@0
+            displayName: 'Install SSH Key'
+            inputs:
+              knownHostsEntry: '$(remote_host)'
+              sshPublicKey: '$(ssh_public_key)'
+              sshPassphrase: '$(ssh_passphrase)'
+              sshKeySecureFile: id_rsa
+          #added keyvault
+          - task: AzureKeyVault@1
+            inputs:
+              ConnectedServiceName: 'dep-service-connection'
+              keyVaultName: 'kskey-demo'
+              secretsFilter: '*'
+              runAsPreJob: false
+
+          - task: TerraformTaskV3@3
+            displayName: Terraform init
+            inputs:
+              provider: 'azurerm'
+              command: 'init'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
+              commandOptions: '-var-file="dev.auto.tfvars"' # changed
+              backendServiceArm: 'dep-service-connection' # change
+              backendAzureRmResourceGroupName: 'dem-admin-bi-rg' # changed
+              backendAzureRmStorageAccountName: 'demtstatesa' # changed
+              backendAzureRmContainerName: 'dem-terraform-container'
+              backendAzureRmKey: 'terraform.tfstate'
+
+          - task: TerraformTaskV3@3
+            displayName: Terraform Plan
+            inputs:
+              provider: 'azurerm'
+              command: 'plan'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
+              commandOptions: '-var-file="dev.auto.tfvars"' # change
+              environmentServiceNameAzureRM: 'dep-service-connection' # change
+          
+          - task: TerraformTaskV3@3
+            inputs:
+              provider: 'azurerm'
+              command: 'apply'
+              workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
+              commandOptions: >-
+                -input=false -auto-approve
+                -var-file="dev.auto.tfvars"
+              environmentServiceNameAzureRM: 'dep-service-connection' # change
+          
+        
+
+
+               
+  
+  
+    
+
+  
+  
+    
+
+
+
+
+      
+    
+
+
+
+
+
+
