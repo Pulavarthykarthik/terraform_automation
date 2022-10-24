@@ -7,7 +7,7 @@ environment = "demo"
 ######### IOThub ########
 ######### key_vault ########
 ######### resource_grp ########
-base_name = "TerraformExample01"
+base_name = "TerraformExample02"
 ######### SQL ########
 max_size_gb = 1
 sku_name = "Basic"
