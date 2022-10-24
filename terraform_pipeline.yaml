@@ -40,7 +40,7 @@ stages:
               backendServiceArm: 'dep-service-connection' #check service connection
               backendAzureRmResourceGroupName: 'dem-admin-bi-rg' # changed
               backendAzureRmStorageAccountName: 'demtstatesa' # changed
-              backendAzureRmContainerName: 'dem-terraform-container'
+              backendAzureRmContainerName: 'daa-terraform-container'
               backendAzureRmKey: 'terraform.tfstate'
  
           - task: TerraformTaskV3@3
@@ -84,7 +84,7 @@ stages:
             backendServiceArm: 'dep-service-connection' #change service connection name
             backendAzureRmResourceGroupName: 'dem-admin-bi-rg' # changed
             backendAzureRmStorageAccountName: 'demtstatesa' # changed
-            backendAzureRmContainerName: 'dem-terraform-container'
+            backendAzureRmContainerName: 'daa-terraform-container'
             backendAzureRmKey: 'terraform.tfstate'
              
 
@@ -133,7 +133,7 @@ stages:
               backendServiceArm: 'dep-service-connection' # change
               backendAzureRmResourceGroupName: 'dem-admin-bi-rg' # changed
               backendAzureRmStorageAccountName: 'demtstatesa' # changed
-              backendAzureRmContainerName: 'dem-terraform-container'
+              backendAzureRmContainerName: 'daa-terraform-container'
               backendAzureRmKey: 'terraform.tfstate'
 
           - task: TerraformTaskV3@3
