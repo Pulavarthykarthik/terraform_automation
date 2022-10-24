@@ -2,13 +2,13 @@ trigger: none
 pr: none
 pool:
   vmImage: windows-latest
-resources:
-  repositories:
-    - repository: modules
-      type: git
-      name: Azure-Data-Enterprise-Platform/DEP-Terraform-iac-modules
-variables:
-  - group: daa-terraform
+# resources:
+#   repositories:
+#     - repository: modules
+#       type: git
+#       name: Azure-Data-Enterprise-Platform/DEP-Terraform-iac-modules
+# variables:
+#   - group: daa-terraform
 
 
 stages:
@@ -22,13 +22,13 @@ stages:
             displayName: Terraform Install
             inputs:
               terraformVersion: 'latest'
-          - task: InstallSSHKey@0
-            displayName: 'Install SSH Key'
-            inputs:
-              knownHostsEntry: '$(remote_host)'
-              sshPublicKey: '$(ssh_public_key)'
-              sshPassphrase: '$(ssh_passphrase)'
-              sshKeySecureFile: id_rsa
+          # - task: InstallSSHKey@0
+          #   displayName: 'Install SSH Key'
+          #   inputs:
+          #     knownHostsEntry: '$(remote_host)'
+          #     sshPublicKey: '$(ssh_public_key)'
+          #     sshPassphrase: '$(ssh_passphrase)'
+          #     sshKeySecureFile: id_rsa
 
           - task: TerraformTaskV3@3
             displayName: Terraform init
@@ -60,13 +60,13 @@ stages:
           displayName: Terraform install
           inputs:
             terraformVersion: 'latest'
-        - task: InstallSSHKey@0
-          displayName: 'Install SSH Key'
-          inputs:
-            knownHostsEntry: '$(remote_host)'
-            sshPublicKey: '$(ssh_public_key)'
-            sshPassphrase: '$(ssh_passphrase)'
-            sshKeySecureFile: id_rsa
+        # - task: InstallSSHKey@0
+        #   displayName: 'Install SSH Key'
+        #   inputs:
+        #     knownHostsEntry: '$(remote_host)'
+        #     sshPublicKey: '$(ssh_public_key)'
+        #     sshPassphrase: '$(ssh_passphrase)'
+        #     sshKeySecureFile: id_rsa
         #new things added for azure keyvault
         - task: AzureKeyVault@1
           inputs:
@@ -108,13 +108,13 @@ stages:
             displayName: Terraform install
             inputs:
               terraformVersion: 'latest'
-          - task: InstallSSHKey@0
-            displayName: 'Install SSH Key'
-            inputs:
-              knownHostsEntry: '$(remote_host)'
-              sshPublicKey: '$(ssh_public_key)'
-              sshPassphrase: '$(ssh_passphrase)'
-              sshKeySecureFile: id_rsa
+          # - task: InstallSSHKey@0
+          #   displayName: 'Install SSH Key'
+          #   inputs:
+          #     knownHostsEntry: '$(remote_host)'
+          #     sshPublicKey: '$(ssh_public_key)'
+          #     sshPassphrase: '$(ssh_passphrase)'
+          #     sshKeySecureFile: id_rsa
           #added keyvault
           - task: AzureKeyVault@1
             inputs:
