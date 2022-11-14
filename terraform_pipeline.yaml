@@ -1,5 +1,11 @@
-trigger: none
-pr: none
+trigger:
+  branches:
+    include:
+    - main
+
+variables:
+  - group: daa-terraform
+
 pool:
   vmImage: windows-latest
 # resources:
@@ -7,9 +13,6 @@ pool:
 #     - repository: modules
 #       type: git
 #       name: Azure-Data-Enterprise-Platform/DEP-Terraform-iac-modules
-variables:
-  - group: daa-terraform
-
 
 stages:
   - stage: terraform_validate
@@ -37,11 +40,11 @@ stages:
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
               commandOptions: '-var-file="dev.auto.tfvars"'
-              backendServiceArm: 'dep-service-connection' #check service connection
-              backendAzureRmResourceGroupName: 'dem-admin-bi-rg' # changed
-              backendAzureRmStorageAccountName: 'demtstatesa' # changed
-              backendAzureRmContainerName: 'daa-terraform-container'
-              backendAzureRmKey: 'terraform.tfstate'
+              backendServiceArm: '$(serviceconnection)' #check service connection
+              backendAzureRmResourceGroupName: '$(backendresourcegroup)' # changed
+              backendAzureRmStorageAccountName: '$(backendstorageaccount)' # changed
+              backendAzureRmContainerName: '$(backendcontainer)'
+              backendAzureRmKey: '$(statefilename)'
  
           - task: TerraformTaskV3@3
             displayName: Terraform Validate
@@ -70,8 +73,8 @@ stages:
         #new things added for azure keyvault
         - task: AzureKeyVault@1
           inputs:
-            ConnectedServiceName: 'dep-service-connection'
-            keyVaultName: 'kskey-demo'
+            ConnectedServiceName: '$(serviceconnection)'
+            keyVaultName: '$(keyvaultname)'
             secretsFilter: '*'
             runAsPreJob: false
         - task: TerraformTaskV3@3
@@ -81,11 +84,11 @@ stages:
             command: 'init'
             workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
             commandOptions: '-var-file="dev.auto.tfvars"' #changed dev file name
-            backendServiceArm: 'dep-service-connection' #change service connection name
-            backendAzureRmResourceGroupName: 'dem-admin-bi-rg' # changed
-            backendAzureRmStorageAccountName: 'demtstatesa' # changed
-            backendAzureRmContainerName: 'daa-terraform-container'
-            backendAzureRmKey: 'terraform.tfstate'
+            backendServiceArm: '$(serviceconnection)' #change service connection name
+            backendAzureRmResourceGroupName: '$(backendresourcegroup)' # changed
+            backendAzureRmStorageAccountName: '$(backendstorageaccount)' # changed
+            backendAzureRmContainerName: '$(backendcontainer)'
+            backendAzureRmKey: '$(statefilename)'
              
 
         - task: TerraformTaskV3@3
@@ -95,11 +98,32 @@ stages:
             command: 'plan'
             workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
             commandOptions: '-var-file="dev.auto.tfvars"' # change
-            environmentServiceNameAzureRM: 'dep-service-connection' # change
+            environmentServiceNameAzureRM: '$(serviceconnection)' # change
+
+  #Approval Stage
+
+  - stage:  Approve_Deployment_QA
+    displayName: Approval for creting the resources
+    dependsOn: terraform_plan
+    condition: succeeded('terraform_plan')
+    jobs:
+    - job: waitForValidation
+      displayName: Wait for external validation
+      pool: server
+      timeoutInMinutes: 4320 # job times out in 3 days
+      steps:
+        - task: ManualValidation@0
+          timeoutInMinutes: 4320 # task times out in 3 days
+          inputs:
+           notifyUsers: |
+            $(notifyUsers)
+           instructions: 'Please validate the names of the resources'
+           onTimeout: 'reject'
+
   - stage: terraform_apply
     dependsOn:
-    - terraform_plan
-    condition: succeeded('terraform_plan')
+    - Approve_Deployment_QA
+    condition: and(succeeded('Approve_Deployment_QA'),succeeded('terraform_plan'))
     jobs:
       - job: terraform_apply_develop
         steps:
@@ -118,8 +142,8 @@ stages:
           #added keyvault
           - task: AzureKeyVault@1
             inputs:
-              ConnectedServiceName: 'dep-service-connection'
-              keyVaultName: 'kskey-demo'
+              ConnectedServiceName: '$(serviceconnection)'
+              keyVaultName: '$(keyvaultname)'
               secretsFilter: '*'
               runAsPreJob: false
 
@@ -130,11 +154,11 @@ stages:
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
               commandOptions: '-var-file="dev.auto.tfvars"' # changed
-              backendServiceArm: 'dep-service-connection' # change
-              backendAzureRmResourceGroupName: 'dem-admin-bi-rg' # changed
-              backendAzureRmStorageAccountName: 'demtstatesa' # changed
-              backendAzureRmContainerName: 'daa-terraform-container'
-              backendAzureRmKey: 'terraform.tfstate'
+              backendServiceArm: '$(serviceconnection)' # change
+              backendAzureRmResourceGroupName: '$(backendresourcegroup)' # changed
+              backendAzureRmStorageAccountName: '$(backendstorageaccount)' # changed
+              backendAzureRmContainerName: '$(backendcontainer)'
+              backendAzureRmKey: '$(statefilename)'
 
           - task: TerraformTaskV3@3
             displayName: Terraform Plan
@@ -143,7 +167,7 @@ stages:
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
               commandOptions: '-var-file="dev.auto.tfvars"' # change
-              environmentServiceNameAzureRM: 'dep-service-connection' # change
+              environmentServiceNameAzureRM: '$(serviceconnection)' # change
           
           - task: TerraformTaskV3@3
             inputs:
@@ -153,7 +177,7 @@ stages:
               commandOptions: >-
                 -input=false -auto-approve
                 -var-file="dev.auto.tfvars"
-              environmentServiceNameAzureRM: 'dep-service-connection' # change
+              environmentServiceNameAzureRM: '$(serviceconnection)' # change
           
         
 
