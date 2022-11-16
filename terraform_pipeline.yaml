@@ -71,12 +71,12 @@ stages:
         #     sshPassphrase: '$(ssh_passphrase)'
         #     sshKeySecureFile: id_rsa
         #new things added for azure keyvault
-        - task: AzureKeyVault@1
-          inputs:
-            ConnectedServiceName: '$(serviceconnection)'
-            keyVaultName: '$(keyvaultname)'
-            secretsFilter: '*'
-            runAsPreJob: false
+        # - task: AzureKeyVault@1
+        #   inputs:
+        #     ConnectedServiceName: '$(serviceconnection)'
+        #     keyVaultName: '$(keyvaultname)'
+        #     secretsFilter: '*'
+        #     runAsPreJob: false
         - task: TerraformTaskV3@3
           displayName: Terraform init
           inputs:
@@ -140,12 +140,12 @@ stages:
           #     sshPassphrase: '$(ssh_passphrase)'
           #     sshKeySecureFile: id_rsa
           #added keyvault
-          - task: AzureKeyVault@1
-            inputs:
-              ConnectedServiceName: '$(serviceconnection)'
-              keyVaultName: '$(keyvaultname)'
-              secretsFilter: '*'
-              runAsPreJob: false
+          # - task: AzureKeyVault@1
+          #   inputs:
+          #     ConnectedServiceName: '$(serviceconnection)'
+          #     keyVaultName: '$(keyvaultname)'
+          #     secretsFilter: '*'
+          #     runAsPreJob: false
 
           - task: TerraformTaskV3@3
             displayName: Terraform init
