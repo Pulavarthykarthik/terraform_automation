@@ -1,8 +1,12 @@
 terraform {
   required_providers {
     azurerm = {
-      source = "hashicorp/azurerm"
-      version = "3.11.0"
+        source = "hashicorp/azurerm"
+        version = "3.31.0"
+    }
+    random = {
+        source = "hashicorp/random"
+        version = "3.4.3"
     }
   }
 }
@@ -13,87 +17,72 @@ provider "azurerm" {
   }
 }
 
-module "resource_grp" {
-  source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/resource_grp"
-  base_name = var.base_name
-  location = var.location
-  environment = "demo"
-}
 
-module "storage_account" {
-  source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/storage_account"
-  base_name = var.base_name
-  resource_group_name = module.resource_grp.rg_name_out
-  location = var.location
-  environment = var.environment
-  contName = var.contName
-  contCount = var.contCount
-}
 
-module "key_vault_sql"{
-    source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/key_vault"
-    resource_group_name = module.resource_grp.rg_name_out
-    location = var.location
-    environment = var.environment
-}
 
-module "ADF" {
-    source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/ADF"
-    resource_group_name= module.resource_grp.rg_name_out
+
+module "resourcegroup" {
+    source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/resourcegroup"
+    resource_group_name = var.resource_group_name
     location = var.location
     environment = var.environment
   
 }
 
-module "DataBricks" {
-  source ="git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/DataBricks"
-  resource_group_name=module.resource_grp.rg_name_out
-  location = var.location
-  environment = var.environment
+
+module "managedidentities" {
+    source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/managedidentities"
+    managed_identity = var.managed_identity
+    resource_group_name = module.resourcegroup.rg_name_out
+    location = module.resourcegroup.rg_location
+  
 }
 
-module "CosmosDBacc" {
-  source="git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/CosmosDBacc"
-  resource_group_name=module.resource_grp.rg_name_out
-  location = var.location
-  environment = var.environment
+
+module "storageaccount" {
+    source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/storageaccount"
+    location = module.resourcegroup.rg_location
+    resource_group_name = module.resourcegroup.rg_name_out
+    account_tier = var.account_tier
+    replication_type = var.replication_type
+    environment = var.environment
+    managed_identity_id = module.managedidentities.managed_identity_id
+    container_name = var.container_name
+
+
+  
 }
 
-module "Synapse" {
-  source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/Synapse"
-  resource_group_name=module.resource_grp.rg_name_out
-  location = var.location
-  environment = var.environment
+module "ADF" {
+    source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/ADF"
+    adf_name = var.adf_name
+    location = module.resourcegroup.rg_location
+    resource_group_name = module.resourcegroup.rg_name_out
+    environment = var.environment
+    managed_identity_id = module.managedidentities.managed_identity_id
+    # github_account_name = var.github_account_name
+    # github_branch_name = var.github_branch_name
+    # github_url = var.github_url
+    # repo_name = var.repo_name
+    # root_folder = var.root_folder
+
+  
 }
 
-module "IOThub" {
-  source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/IOThub"
-  resource_group_name=module.resource_grp.rg_name_out
-  location = var.location
-  environment = var.environment
-}
-
-############################ run above code before ########################################
-#how to add network rule for mssql server and database through terraform
-
-data "azurerm_key_vault" "example" {
-  name                = "kskey-demo"
-  resource_group_name = "dem-admin-bi-rg"
-}
-data "azurerm_key_vault_secret" "secret1" {
-  name         = "DEMO-SQL-pass3"
-  key_vault_id = data.azurerm_key_vault.example.id
-}
 
 module "SQL" {
-  source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/SQL"
-  #key_vault_id= module.key_vault_sql.kv_id_out
-  administrator_login_password = data.azurerm_key_vault_secret.secret1.value
-  resource_group_name = module.resource_grp.rg_name_out
-  location = var.location
-  environment = var.environment
+    source = "git::https://github.com/Pulavarthykarthik/terraform_automation.git//modules/SQL"
+    sql_name = var.sql_name
+    resource_group_name = module.resourcegroup.rg_name_out
+    location = module.resourcegroup.rg_location
+    environment = var.environment
+    managed_identity_id = module.managedidentities.managed_identity_id
+    administrator_login_name = var.administrator_login_name
+    administrator_login_password = var.administrator_login_password
+    sql_datbase = var.sql_datbase
+    max_size_gb = var.max_size_gb
+    sku_name = var.sku_name
 
-  max_size_gb = var.max_size_gb
-  sku_name = var.sku_name
+
+  
 }
-

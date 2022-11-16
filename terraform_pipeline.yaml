@@ -39,7 +39,7 @@ stages:
               provider: 'azurerm'
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
-              commandOptions: '-var-file="dev.auto.tfvars"'
+              commandOptions: '-var-file="qa.auto.tfvars"'
               backendServiceArm: '$(serviceconnection)' #check service connection
               backendAzureRmResourceGroupName: '$(backendresourcegroup)' # changed
               backendAzureRmStorageAccountName: '$(backendstorageaccount)' # changed
@@ -83,7 +83,7 @@ stages:
             provider: 'azurerm'
             command: 'init'
             workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
-            commandOptions: '-var-file="dev.auto.tfvars"' #changed dev file name
+            commandOptions: '-var-file="qa.auto.tfvars"' 
             backendServiceArm: '$(serviceconnection)' #change service connection name
             backendAzureRmResourceGroupName: '$(backendresourcegroup)' # changed
             backendAzureRmStorageAccountName: '$(backendstorageaccount)' # changed
@@ -97,7 +97,7 @@ stages:
             provider: 'azurerm'
             command: 'plan'
             workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
-            commandOptions: '-var-file="dev.auto.tfvars"' # change
+            commandOptions: '-var-file="qa.auto.tfvars"' # change
             environmentServiceNameAzureRM: '$(serviceconnection)' # change
 
   #Approval Stage
@@ -153,7 +153,7 @@ stages:
               provider: 'azurerm'
               command: 'init'
               workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
-              commandOptions: '-var-file="dev.auto.tfvars"' # changed
+              commandOptions: '-var-file="qa.auto.tfvars"' # changed
               backendServiceArm: '$(serviceconnection)' # change
               backendAzureRmResourceGroupName: '$(backendresourcegroup)' # changed
               backendAzureRmStorageAccountName: '$(backendstorageaccount)' # changed
@@ -166,7 +166,7 @@ stages:
               provider: 'azurerm'
               command: 'plan'
               workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
-              commandOptions: '-var-file="dev.auto.tfvars"' # change
+              commandOptions: '-var-file="qa.auto.tfvars"' # change
               environmentServiceNameAzureRM: '$(serviceconnection)' # change
           
           - task: TerraformTaskV3@3
@@ -176,7 +176,7 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)/azure_terraform/'
               commandOptions: >-
                 -input=false -auto-approve
-                -var-file="dev.auto.tfvars"
+                -var-file="qa.auto.tfvars"
               environmentServiceNameAzureRM: '$(serviceconnection)' # change
           
         
