@@ -5,10 +5,10 @@ variable "adf_name" {
 }
 
 
-variable "managed_identity_id" {
-  type = string
-  description = "Name of the user assigned managed identity"
-}
+# variable "managed_identity_id" {
+#   type = string
+#   description = "Name of the user assigned managed identity"
+# }
 
 variable "environment" {
   type = string

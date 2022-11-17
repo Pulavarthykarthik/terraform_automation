@@ -6,9 +6,9 @@ output "location" {
     value = module.resourcegroup.rg_location
 }
 
-output "managed_identity_name" {
-    value = module.managedidentities.managed_identity_name
-}
+# output "managed_identity_name" {
+#     value = module.managedidentities.managed_identity_name
+# }
 
 
 

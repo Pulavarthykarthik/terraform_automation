@@ -22,10 +22,10 @@ variable "replication_type" {
   description = "Enter the replication type"
 }
 
-variable "managed_identity" {
-  type = string
-  description = "Name of the user assigned managed identity"
-}
+# variable "managed_identity" {
+#   type = string
+#   description = "Name of the user assigned managed identity"
+# }
 
 # variable "managed_identity_id" {
 #   type = string

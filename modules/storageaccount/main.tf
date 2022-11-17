@@ -26,10 +26,10 @@ resource "azurerm_storage_account" "demo_storage" {
   tags = {
     environment = var.environment
   }
-  identity {
-    type = "UserAssigned"
-    identity_ids = [ var.managed_identity_id ]
-  }
+  # identity {
+  #   type = "UserAssigned"
+  #   identity_ids = [ var.managed_identity_id ]
+  # }
   
 }
 

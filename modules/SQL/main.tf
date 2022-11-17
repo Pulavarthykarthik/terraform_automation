@@ -6,15 +6,15 @@ resource "azurerm_mssql_server" "demo_sql" {
     administrator_login          = var.administrator_login_name
     administrator_login_password = var.administrator_login_password
     minimum_tls_version          = "1.2"
-    identity {
-      type = "UserAssigned"
-      identity_ids = [var.managed_identity_id]
+    # identity {
+    #   type = "UserAssigned"
+    #   identity_ids = [var.managed_identity_id]
       
-    }
+    # }
     tags = {
       environment = var.environment
     }
-    primary_user_assigned_identity_id = var.managed_identity_id
+    # primary_user_assigned_identity_id = var.managed_identity_id
     
 
 }

@@ -30,10 +30,10 @@ variable "environment" {
   type = string
 }
 
-variable "managed_identity_id" {
-  type = string
-  description = "Name of the user assigned managed identity"
-}
+# variable "managed_identity_id" {
+#   type = string
+#   description = "Name of the user assigned managed identity"
+# }
 
 variable "sql_datbase" {
     type = string

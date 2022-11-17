@@ -5,10 +5,10 @@ resource "azurerm_data_factory" "demo_adf" {
   tags = {
     environment = var.environment
   }
-  identity {
-    type = "UserAssigned"
-    identity_ids = [ var.managed_identity_id ]
-  }
+  # identity {
+  #   type = "UserAssigned"
+  #   identity_ids = [ var.managed_identity_id ]
+  # }
   # github_configuration {
   #   account_name = var.github_account_name
   #   branch_name = var.github_branch_name
