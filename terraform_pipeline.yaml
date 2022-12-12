@@ -21,7 +21,7 @@ stages:
     jobs:
       - job: ScanningCode
         pool:
-          vmImage: 'windows-latest'
+          vmImage: 'ubuntu-latest'
         displayName: 'Installing Checkov'
         steps:
           # - task: Bash@3
