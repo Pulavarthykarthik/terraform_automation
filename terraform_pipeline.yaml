@@ -24,15 +24,16 @@ stages:
           vmImage: 'windows-latest'
         displayName: 'Installing Checkov'
         steps:
-          - task: CmdLine@2
+          - task: Bash@3
             inputs:
-              script: 'pip3 install checkov'
+              targetType: 'inline'
+              script: 'pip install checkov'
               failOnStderr: true
           
-          - task: CmdLine@2
+          - task: Bash@3
             inputs:
+              targetType: 'inline'
               script: 'checkov -d ./modules --skip-path ./*.json --output junitxml > TEST-checkov-report.xml'
-              failOnStderr: true
       
           - powershell: |
               tree "$(System.DefaultWorkingDirectory)" /F
