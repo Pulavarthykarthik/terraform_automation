@@ -28,7 +28,6 @@ stages:
             inputs:
               targetType: 'inline'
               script: 'pip3 install checkov'
-              failOnStderr: true
           
           - task: Bash@3
             inputs:
