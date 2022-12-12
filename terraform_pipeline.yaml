@@ -24,16 +24,25 @@ stages:
           vmImage: 'windows-latest'
         displayName: 'Installing Checkov'
         steps:
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: 'pip3 install checkov'
+          # - task: Bash@3
+          #   inputs:
+          #     targetType: 'inline'
+          #     script: 'pip3 install checkov'
           
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: 'checkov -d ./modules --output junitxml > TEST-checkov-report.xml'
-      
+          # - task: Bash@3
+          #   inputs:
+          #     targetType: 'inline'
+          #     script: 'checkov -d ./modules --output junitxml > TEST-checkov-report.xml'
+          - bash: |
+              docker pull bridgecrew/checkov
+
+          - bash: |
+              docker run \
+              --volume $(System.DefaultWorkingDirectory):/modules bridgecrew/checkov \    
+              --directory /modules \
+              --output junitxml \
+              --soft-fail > $(System.DefaultWorkingDirectory)/CheckovReport.xml
+
           - powershell: |
               tree "$(System.DefaultWorkingDirectory)" /F
             displayName: 'Treeview of System.DefaultWorkingDirectory' 
@@ -42,7 +51,7 @@ stages:
             condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'JUnit'
-              testResultsFiles: '**/TEST-*.xml'
+              testResultsFiles: 'CheckovReport.xml'
               searchFolder: '$(System.DefaultWorkingDirectory)'
               testRunTitle: 'CheckOV Scan'
             displayName: 'Publish checkov Test Results'
