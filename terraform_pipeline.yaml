@@ -36,7 +36,7 @@ stages:
               targetType: 'inline'
               script: |
                 # mkdir checkov-report
-                checkov -d . --skip-path ./*.json --output junitxml > $(System.DefaultWorkingDirectory)/TEST-checkov-report.xml
+                checkov -d . --skip-path ./*.json -o junitxml > $(System.DefaultWorkingDirectory)/TEST-checkov-report.xml
               workingDirectory: '$(System.DefaultWorkingDirectory)'
             displayName: 'Checkov Static Code Analysis'
 
