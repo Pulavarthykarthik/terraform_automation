@@ -36,11 +36,14 @@ stages:
               targetType: 'inline'
               script: |
                 # mkdir checkov-report
-                checkov -d . --skip-path ./*.json -o junitxml > TEST-checkov-report.xml --download-external-modules: true
+                checkov -d modules --skip-path ./*.json -o junitxml > TEST-checkov-report.xml
               workingDirectory: '$(System.DefaultWorkingDirectory)'
               
             displayName: 'Checkov Static Code Analysis'
-
+          - powershell: |
+              tree "$(System.DefaultWorkingDirectory)" /F
+            displayName: 'Treeview of System.DefaultWorkingDirectory' 
+          
           - task: PublishTestResults@2
             condition: succeededOrFailed()
             inputs:
