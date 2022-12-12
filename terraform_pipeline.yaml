@@ -26,6 +26,7 @@ stages:
             inputs:
               targetType: 'inline'
               script: 'pip3 install checkov'
+              workingDirectory: $(System.DefaultWorkingDirectory)
             displayName: 'Installing Checkov'
           
           - powershell: |
