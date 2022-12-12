@@ -32,7 +32,7 @@ stages:
           - task: Bash@3
             inputs:
               targetType: 'inline'
-              script: 'checkov -d ./modules --skip-path ./*.json --output junitxml > TEST-checkov-report.xml'
+              script: 'checkov -d ./modules --output junitxml > TEST-checkov-report.xml'
       
           - powershell: |
               tree "$(System.DefaultWorkingDirectory)" /F
