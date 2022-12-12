@@ -20,6 +20,8 @@ stages:
     displayName: Static Code Analysis Stage
     jobs:
       - job: ScanningCode
+        pool:
+          vmImage: 'ubuntu-latest'
         displayName: Run Checkov
         steps:
           - task: Bash@3
