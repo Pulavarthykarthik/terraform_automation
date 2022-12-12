@@ -36,9 +36,9 @@ stages:
               targetType: 'inline'
               script: |
                 # mkdir checkov-report
-                checkov -d . --skip-path ./*.json -o junitxml > TEST-checkov-report.xml
+                checkov -d . --skip-path ./*.json -o junitxml > TEST-checkov-report.xml --download-external-modules: true
               workingDirectory: '$(System.DefaultWorkingDirectory)'
-              download_external_modules: true
+              
             displayName: 'Checkov Static Code Analysis'
 
           - task: PublishTestResults@2
