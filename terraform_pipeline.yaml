@@ -21,40 +21,40 @@ stages:
     jobs:
       - job: ScanningCode
         pool:
-          vmImage: 'ubuntu-latest'
-        displayName: Run Checkov
+          vmImage: 'windows-latest'
+        displayName: 'Installing Checkov'
         steps:
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: 'pip3 install checkov'
-              workingDirectory: $(System.DefaultWorkingDirectory)
-            displayName: 'Installing Checkov'
+          # - task: Bash@3
+          #   inputs:
+          #     targetType: 'inline'
+        - script: |
+           pip3 install checkov
+           checkov -d ./modules --skip-path ./*.json -o junitxml > TEST-checkov-report.xml
+              # workingDirectory: $(System.DefaultWorkingDirectory)
+            # displayName: 'Installing Checkov'
           
-          # - powershell: |
-          #     tree "$(System.DefaultWorkingDirectory)" /F
-          #   displayName: 'Treeview of System.DefaultWorkingDirectory'
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: |
-                # mkdir checkov-report
-                checkov -d ./modules --skip-path ./*.json -o junitxml > TEST-checkov-report.xml
-              workingDirectory: '$(System.DefaultWorkingDirectory)'
+       
+          # # - task: Bash@3
+          # #   inputs:
+          # #     targetType: 'inline'
+          # #     script: |
+          # #       # mkdir checkov-report
+          # #       checkov -d ./modules --skip-path ./*.json -o junitxml > TEST-checkov-report.xml
+          # #     workingDirectory: '$(System.DefaultWorkingDirectory)'
               
-            displayName: 'Checkov Static Code Analysis'
+          #   displayName: 'Checkov Static Code Analysis'
           # - powershell: |
           #     tree "$(System.DefaultWorkingDirectory)" /F
           #   displayName: 'Treeview of System.DefaultWorkingDirectory' 
           
-          - task: PublishTestResults@2
-            condition: succeededOrFailed()
-            inputs:
-              testResultsFormat: 'JUnit'
-              testResultsFiles: '**/TEST-*.xml'
-              searchFolder: '$(System.DefaultWorkingDirectory)'
-              testRunTitle: 'CheckOV Scan'
-            displayName: 'Publish checkov Test Results'
+        - task: PublishTestResults@2
+          condition: succeededOrFailed()
+          inputs:
+            testResultsFormat: 'JUnit'
+            testResultsFiles: '**/TEST-*.xml'
+            searchFolder: '$(System.DefaultWorkingDirectory)'
+            testRunTitle: 'CheckOV Scan'
+          displayName: 'Publish checkov Test Results'
 
   - stage: terraform_validate
     displayName: Prepare Terraform and Validate Code
