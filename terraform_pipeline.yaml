@@ -24,19 +24,15 @@ stages:
           vmImage: 'windows-latest'
         displayName: 'Installing Checkov'
         steps:
-          - bash: |
-              pip install checkov
-          - bash: |
-              checkov -d ./modules --skip-path ./*.json -o junitxml > TEST-checkov-report.xml
-
-          # - task: UsePythonVersion@0
-          #   inputs:
-          #     versionSpec: '3.8'
-          #   displayName: 'Install Python 3.8'
-          # - script: pip install checkov
-          #   displayName: 'Install Checkov'
-          # - script: checkov -d ./modules --skip-path ./*.json -o junitxml > TEST-checkov-report.xml
-          #   displayName: 'Checkov Static Code Analysis'      
+          - task: CmdLine@2
+            inputs:
+              script: 'pip3 install checkov'
+              failOnStderr: true
+          
+          - task: CmdLine@2
+            inputs:
+              script: 'checkov -d ./modules --skip-path ./*.json --output junitxml > TEST-checkov-report.xml'
+              failOnStderr: true
       
           - powershell: |
               tree "$(System.DefaultWorkingDirectory)" /F
