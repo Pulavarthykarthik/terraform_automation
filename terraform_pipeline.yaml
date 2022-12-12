@@ -31,9 +31,9 @@ stages:
               workingDirectory: $(System.DefaultWorkingDirectory)
             displayName: 'Installing Checkov'
           
-          - powershell: |
-              tree "$(System.DefaultWorkingDirectory)" /F
-            displayName: 'Treeview of System.DefaultWorkingDirectory'
+          # - powershell: |
+          #     tree "$(System.DefaultWorkingDirectory)" /F
+          #   displayName: 'Treeview of System.DefaultWorkingDirectory'
           - task: Bash@3
             inputs:
               targetType: 'inline'
@@ -43,9 +43,9 @@ stages:
               workingDirectory: '$(System.DefaultWorkingDirectory)'
               
             displayName: 'Checkov Static Code Analysis'
-          - powershell: |
-              tree "$(System.DefaultWorkingDirectory)" /F
-            displayName: 'Treeview of System.DefaultWorkingDirectory' 
+          # - powershell: |
+          #     tree "$(System.DefaultWorkingDirectory)" /F
+          #   displayName: 'Treeview of System.DefaultWorkingDirectory' 
           
           - task: PublishTestResults@2
             condition: succeededOrFailed()
