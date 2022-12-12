@@ -25,7 +25,8 @@ stages:
         displayName: 'Installing Checkov'
         steps:
           - bash: |
-              pip install checkov \
+              pip install checkov
+          - bash: |
               checkov -d ./modules --skip-path ./*.json -o junitxml > TEST-checkov-report.xml
 
           # - task: UsePythonVersion@0
