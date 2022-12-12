@@ -15,6 +15,36 @@ pool:
 #       name: Azure-Data-Enterprise-Platform/DEP-Terraform-iac-modules
 
 stages:
+
+  - stage: Static_code_Analysis
+    displayName: Static Code Analysis Stage
+    jobs:
+      - job: ScanningCode
+        displayName: Run Checkov
+        steps:
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: 'pip3 install checkov'
+            displayName: 'Installing Checkov'
+          - task: Bash@3
+            inputs:
+              targetType: 'inline'
+              script: |
+                mkdir checkov-report
+                checkov -d . --skip-path ./*.json --output junitxml > $(System.DefaultWorkingDirectory)/checkov-report/TEST-checkov-report.xml
+              workingDirectory: '$(System.DefaultWorkingDirectory)'
+            displayName: 'Checkov Static Code Analysis'
+
+          - task: PublishTestResults@2
+            condition: succeededOrFailed()
+            inputs:
+              testResultsFormat: 'JUnit'
+              testResultsFiles: '**/TEST-*.xml'
+              searchFolder: '$(System.DefaultWorkingDirectory)/checkov-report'
+              testRunTitle: 'CheckOV Scan'
+            displayName: 'Publish checkov Test Results'
+
   - stage: terraform_validate
     displayName: Prepare Terraform and Validate Code
     jobs:
