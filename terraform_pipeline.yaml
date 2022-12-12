@@ -37,7 +37,7 @@ stages:
               targetType: 'inline'
               script: |
                 # mkdir checkov-report
-                checkov -directory ./modules --skip-path ./*.json -o junitxml > TEST-checkov-report.xml
+                checkov -d ./modules --skip-path ./*.json -o junitxml > TEST-checkov-report.xml --external-modules-download-path ./azure_terraform
               workingDirectory: '$(System.DefaultWorkingDirectory)'
               
             displayName: 'Checkov Static Code Analysis'
