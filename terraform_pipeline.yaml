@@ -7,7 +7,7 @@ variables:
   - group: daa-terraform
 
 pool:
-  vmImage: windows-latest
+  vmImage: 'ubuntu-latest'
 # resources:
 #   repositories:
 #     - repository: modules
@@ -52,7 +52,7 @@ stages:
       - job: QualityTestJob
         displayName: Run TFSec
         pool:
-          vmImage: 'windows-latest'
+          vmImage: 'ubuntu-latest'
         steps:
           - bash: |
               docker pull liamg/tfsec:latest
