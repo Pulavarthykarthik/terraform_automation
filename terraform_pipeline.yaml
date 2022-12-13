@@ -15,39 +15,55 @@ pool:
 #       name: Azure-Data-Enterprise-Platform/DEP-Terraform-iac-modules
 
 stages:
-
-  - stage: Static_code_Analysis
-    displayName: Static Code Analysis Stage
-    jobs:
-      - job: ScanningCode
-        displayName: Checkov compliance scan
-        steps:
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: 'pip3 install checkov'
-            displayName: 'Install checkov'
+  # checkov code
+  # - stage: Static_code_Analysis
+  #   displayName: Static Code Analysis Stage
+  #   jobs:
+  #     - job: ScanningCode
+  #       displayName: Checkov compliance scan
+  #       steps:
+  #         - task: Bash@3
+  #           inputs:
+  #             targetType: 'inline'
+  #             script: 'pip3 install checkov'
+  #           displayName: 'Install checkov'
           
-          - task: Bash@3
-            inputs:
-              targetType: 'inline'
-              script: 'checkov -d ./modules --output junitxml > CheckovReport.xml'
-            displayName: 'Checkov Static Code Analysis'
+  #         - task: Bash@3
+  #           inputs:
+  #             targetType: 'inline'
+  #             script: 'checkov -d ./modules --output junitxml > CheckovReport.xml'
+  #           displayName: 'Checkov Static Code Analysis'
           
                   
-          - powershell: |
-              tree "$(System.DefaultWorkingDirectory)" /F
-            displayName: 'Treeview of System.DefaultWorkingDirectory' 
+           
+  #         - task: PublishTestResults@2
+  #           condition: succeededOrFailed()
+  #           inputs:
+  #             testResultsFormat: 'JUnit'
+  #             testResultsFiles: 'CheckovReport.xml'
+  #             searchFolder: '$(System.DefaultWorkingDirectory)'
+  #             testRunTitle: 'CheckOV Scan'
+  #           displayName: 'Publish checkov Test Results'
+
+
+  - stage: QualityCheskStage
+    displayName: Quality Check Stage
+    jobs:
+      - job: QualityTestJob
+        displayName: Run TFSec
+        steps:
+          - bash: |
+              docker pull liamg/tfsec
+              docker run --rm -v $(System.DefaultWorkingDirectory)/modules:/src liamg/tfsec ./src --format JUnit > TFSec-Report.xml
+            displayName: TFSec Static Code Analysis
           
           - task: PublishTestResults@2
-            condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'JUnit'
-              testResultsFiles: 'CheckovReport.xml'
-              searchFolder: '$(System.DefaultWorkingDirectory)'
-              testRunTitle: 'CheckOV Scan'
-            displayName: 'Publish checkov Test Results'
-
+              testResultsFiles: 'TFSec-Report.xml'
+              failTaskOnFailedTests: false
+              testRunTitle: 'TFSec Scan'
+        
   - stage: terraform_validate
     displayName: Prepare Terraform and Validate Code
     jobs:
