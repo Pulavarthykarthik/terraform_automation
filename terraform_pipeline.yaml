@@ -7,7 +7,7 @@ variables:
   - group: daa-terraform
 
 pool:
-  vmImage: 'ubuntu-latest'
+  vmImage: 'windows-latest'
 # resources:
 #   repositories:
 #     - repository: modules
@@ -52,11 +52,11 @@ stages:
       - job: QualityTestJob
         displayName: Run TFSec
         pool:
-          vmImage: 'ubuntu-latest'
+          vmImage: 'windows-latest'
         steps:
           - bash: |
-              docker pull liamg/tfsec:latest
-              docker run --rm -t -v $(System.DefaultWorkingDirectory)/modules:/src liamg/tfsec ./src --format JUnit > TFSec-Report.xml
+              docker pull aquasec/tfsec:latest
+              docker run --rm -it -v $(System.DefaultWorkingDirectory)/modules:/src aquasec/tfsec ./src --format JUnit > TFSec-Report.xml
             displayName: TFSec Static Code Analysis
           
           - task: PublishTestResults@2
@@ -67,7 +67,11 @@ stages:
               searchFolder: '$(System.DefaultWorkingDirectory)'
               failTaskOnFailedTests: false
               testRunTitle: 'TFSec Scan'
-        
+
+          - bash: |
+              docker rmi "liamg/tfsec:latest" -f | true
+            displayName: 'Remove Terraform Quality Check Docker Images'
+            condition: always()
   - stage: terraform_validate
     displayName: Prepare Terraform and Validate Code
     jobs:
