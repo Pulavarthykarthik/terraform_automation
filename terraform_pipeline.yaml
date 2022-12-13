@@ -22,28 +22,19 @@ stages:
       - job: ScanningCode
         displayName: Checkov compliance scan
         steps:
-          # - task: Bash@3
-          #   inputs:
-          #     targetType: 'inline'
-          #     script: 'pip3 install checkov'
-          #   displayName: 'Install checkov'
-          
-          # - task: Bash@3
-          #   inputs:
-          #     targetType: 'inline'
-          #     script: 'checkov -d . --output junitxml > TEST-checkov-report.xml'
-          #   displayName: 'Checkov Static Code Analysis'
-          
-          - task: PowerShell@2
+          - task: Bash@3
             inputs:
               targetType: 'inline'
               script: 'pip3 install checkov'
-
-          - task: PowerShell@2
+            displayName: 'Install checkov'
+          
+          - task: Bash@3
             inputs:
               targetType: 'inline'
-              script: 'checkov -d . --output junitxml > TEST-checkov-report.xml'
+              script: 'checkov -d ./modules --output junitxml > TEST-checkov-report.xml'
+            displayName: 'Checkov Static Code Analysis'
           
+                  
           - powershell: |
               tree "$(System.DefaultWorkingDirectory)" /F
             displayName: 'Treeview of System.DefaultWorkingDirectory' 
