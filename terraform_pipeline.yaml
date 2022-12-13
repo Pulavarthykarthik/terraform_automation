@@ -56,7 +56,7 @@ stages:
         steps:
           - bash: |
               docker pull aquasec/tfsec-ci
-              docker run --rm -it -v $(System.DefaultWorkingDirectory)/modules:/src aquasec/tfsec /src --format JUnit > TFSec-Report.xml
+              docker run --rm -t -v $(System.DefaultWorkingDirectory)/modules:/src aquasec/tfsec /src --format JUnit > TFSec-Report.xml
             displayName: TFSec Static Code Analysis
           
           - task: PublishTestResults@2
