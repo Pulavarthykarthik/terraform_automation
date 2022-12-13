@@ -56,7 +56,7 @@ stages:
         steps:
           - bash: |
               docker pull liamg/tfsec:latest
-              docker run --rm -v $(System.DefaultWorkingDirectory)/modules:/src liamg/tfsec ./src --format JUnit > TFSec-Report.xml
+              docker run --rm -v ./modules:/src liamg/tfsec ./src --format JUnit > TFSec-Report.xml
             displayName: TFSec Static Code Analysis
           
           - task: PublishTestResults@2
