@@ -55,7 +55,7 @@ stages:
           vmImage: 'windows-latest'
         steps:
           - bash: |
-              docker pull liamg/tfsec
+              docker pull liamg/tfsec:latest
               docker run --rm -v $(System.DefaultWorkingDirectory)/modules:/src liamg/tfsec ./src --format JUnit > TFSec-Report.xml
             displayName: TFSec Static Code Analysis
           
