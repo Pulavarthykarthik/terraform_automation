@@ -52,7 +52,7 @@ stages:
       - job: QualityTestJob
         displayName: Run TFSec
         pool:
-          vmImage: 'windows-latest'
+          vmImage: 'ubuntu-latest'
         steps:
           - bash: |
               docker pull aquasec/tfsec-ci
