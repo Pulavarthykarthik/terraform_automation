@@ -60,6 +60,7 @@ stages:
             displayName: TFSec Static Code Analysis
           
           - task: PublishTestResults@2
+            condition: succeededOrFailed()
             inputs:
               testResultsFormat: 'JUnit'
               testResultsFiles: 'TFSec-Report.xml'
