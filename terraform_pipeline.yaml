@@ -51,6 +51,8 @@ stages:
     jobs:
       - job: QualityTestJob
         displayName: Run TFSec
+        pool:
+          vmImage: 'windows-latest'
         steps:
           - bash: |
               docker pull liamg/tfsec
@@ -61,6 +63,7 @@ stages:
             inputs:
               testResultsFormat: 'JUnit'
               testResultsFiles: 'TFSec-Report.xml'
+              searchFolder: '$(System.DefaultWorkingDirectory)'
               failTaskOnFailedTests: false
               testRunTitle: 'TFSec Scan'
         
