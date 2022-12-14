@@ -69,7 +69,7 @@ stages:
               testRunTitle: 'TFSec Scan'
 
           - bash: |
-              docker rmi "liamg/tfsec:latest" -f | true
+              docker rmi "aquasec/tfsec:latest" -f | true
             displayName: 'Remove Terraform Quality Check Docker Images'
             condition: always()
   - stage: terraform_validate
